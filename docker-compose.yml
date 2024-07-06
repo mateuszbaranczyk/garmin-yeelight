@@ -1,0 +1,6 @@
+services:
+  garlight:
+    build: .
+    network_mode: "host"
+    container_name: "garlight"
+    
