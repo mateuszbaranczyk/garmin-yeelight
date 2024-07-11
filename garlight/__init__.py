@@ -1,7 +1,7 @@
 from flask import Flask
 import time
 import threading
-from bulbs import Bulbs
+from garlight.bulbs import Bulbs
 
 
 bulbs = Bulbs()
@@ -22,6 +22,8 @@ def start_update_thread():
 
 app = Flask(__name__)
 start_update_thread()
+with app.app_context():
+    from garlight import routes
 
 
 @app.route("/")

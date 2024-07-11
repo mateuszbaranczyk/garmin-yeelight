@@ -1,7 +1,7 @@
 from garlight import app, bulbs
 from flask import make_response, Response
-from bulbs import BulbException
-from endpoints_definitions import definitions
+from garlight.bulbs import BulbException
+from garlight.endpoints_definitions import definitions
 
 
 @app.route("/endpoints")
