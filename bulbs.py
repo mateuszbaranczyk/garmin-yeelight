@@ -1,14 +1,5 @@
 from yeelight import Bulb, discover_bulbs
-import logging
-
-logging.basicConfig(
-    filename="bulbs",
-    filemode="a",
-    format="%(asctime)s %(name)s %(levelname)s %(message)s",
-    datefmt="%H:%M:%S",
-)
-
-logger = logging.getLogger("Bulbs")
+from logs import file_logger
 
 
 class BulbException(Exception):
@@ -23,19 +14,21 @@ class HomeBulb:
     def on_off(self) -> str:
         power = self.check_state()
         try:
-            self.change_state(power)
-            logger.info(f"Bulb ({self.bulb_name}) - State changed")
-            return "OK"
+            msg = self.change_state(power)
+            file_logger.info(f"Bulb ({self.bulb_name}) - State changed")
+            return f"OK - {msg}"
         except Exception as err:
-            logger.error(f"Bulb - {self.bulb_name} - {err}")
+            file_logger.error(f"Bulb - {self.bulb_name} - {err}")
             raise BulbException(err)
 
     def change_state(self, power: str) -> None:
         match power:
             case "on":
                 self.bulb.turn_off()
+                return "Power off"
             case "off":
                 self.bulb.turn_on()
+                return "Power on"
 
     def check_state(self) -> str:
         '''-> "on" | "off"'''
