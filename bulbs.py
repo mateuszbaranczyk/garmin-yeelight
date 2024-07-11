@@ -41,9 +41,12 @@ class Bulbs:
     bed_id = "0x0000000012bfc856"
 
     def __init__(self):
-        bulbs = discover_bulbs()
+        self.discover_and_assign()
 
-        for bulb in bulbs:
+    def discover_and_assign(self):
+        self.bulbs = discover_bulbs()
+
+        for bulb in self.bulbs:
             id_ = bulb["capabilities"]["id"]
             ip = bulb["ip"]
 
@@ -52,3 +55,6 @@ class Bulbs:
                     self.bedroom = HomeBulb(ip, name="bed")
                 case self.liv_id:
                     self.livingroom = HomeBulb(ip, name="liv")
+
+    def refresh(self):
+        self.discover_and_assign()
