@@ -1,9 +1,5 @@
 version: "3"
 
-networks:
-  tunnels:
-    external: true
-
 services:
   tunnel-gl:
     container_name: "tunnel-gl"
@@ -11,15 +7,15 @@ services:
     restart: unless-stopped
     environment:
       - TUNNEL_TOKEN=$TOKEN_GL
-    command: tunnel --no-autoupdate run 
+    command: tunnel --no-autoupdate run
     networks:
-      - tunnels
+      - tunell
+
 
   garlight:
     build: .
     ports:
       - "5000:5000"
     container_name: "garlight"
-    networks:
-      - tunnels
-    
+    network_mode: "host"
+
