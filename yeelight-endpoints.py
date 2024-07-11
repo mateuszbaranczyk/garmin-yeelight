@@ -1,22 +1,23 @@
 from flask import Flask, make_response, Response
-from bulbs import Bulbs
+from bulbs import Bulbs, BulbException
+
 
 app = Flask(__name__)
 
 definitions = """- all,All
 -- liv,Salon
---- light_on,Włącz,/liv/on
---- light-off,Wyłącz,/liv/off
+--- light_on-off,ON/OFF,/liv/on-off
 -- bed,Sypialnia
---- light_on,Włącz,/bed/on
---- light-off,Wyłącz,/bed/off
+--- light_on-off,ON/OFF,/bed/on-off
 """
 
 bulbs = Bulbs()
 
+
 @app.route("/")
 def root():
     return "ok!"
+
 
 @app.route("/endpoints")
 def endpoints():
@@ -31,41 +32,21 @@ def create_response(msg: str, status: int) -> Response:
     return response
 
 
-@app.route("/liv/on")
-def liv_on():
+@app.route("/liv/on-off")
+def liv_on_off():
     try:
-        bulbs.livingroom.turn_on()
-        response = create_response("OK", 200)
-    except:
+        msg = bulbs.livingroom.on_off()
+        response = create_response(msg, 200)
+    except BulbException:
         response = create_response("ERROR", 500)
     return response
 
 
-@app.route("/liv/off")
-def liv_off():
+@app.route("/bed/on-off")
+def bed_on_off():
     try:
-        bulbs.livingroom.turn_off()
+        bulbs.bedroom.on_off()
         response = create_response("OK", 200)
-    except:
-        response = create_response("ERROR", 500)
-    return response
-
-
-@app.route("/bed/on")
-def bed_on():
-    try:
-        bulbs.bedroom.turn_on()
-        response = create_response("OK", 200)
-    except:
-        response = create_response("ERROR", 500)
-    return response
-
-
-@app.route("/bed/off")
-def bed_off():
-    try:
-        bulbs.bedroom.turn_off()
-        response = create_response("OK", 200)
-    except:
+    except BulbException:
         response = create_response("ERROR", 500)
     return response
