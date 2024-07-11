@@ -1,9 +1,9 @@
 from flask import Blueprint, Response, make_response
 
-from bulbs import BulbException
-from endpoints_definitions import definitions
-from logs import server_logger
-from run import bulbs
+from garlight.bulbs import BulbException
+from garlight.endpoints_definitions import definitions
+from garlight.logs import server_logger
+from garlight.run import bulbs
 
 liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
 bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")

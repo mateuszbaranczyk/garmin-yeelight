@@ -3,8 +3,8 @@ import time
 
 from flask import Flask
 
-from bulbs import Bulbs
-from logs import server_logger
+from garlight.bulbs import Bulbs
+from garlight.logs import server_logger
 
 bulbs = Bulbs()
 

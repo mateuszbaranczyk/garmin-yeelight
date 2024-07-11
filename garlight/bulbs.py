@@ -1,6 +1,6 @@
 from yeelight import Bulb, discover_bulbs
 
-from logs import file_logger
+from garlight.logs import file_logger
 
 
 class BulbException(Exception):
