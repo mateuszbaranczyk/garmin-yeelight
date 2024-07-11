@@ -27,7 +27,7 @@ def create_app():
     start_update_thread()
     app.logger.handlers = server_logger.handlers
 
-    from . import routes  # noqa
+    from garlight import routes  # noqa
 
     app.register_blueprint(routes.bed)
     app.register_blueprint(routes.liv)
