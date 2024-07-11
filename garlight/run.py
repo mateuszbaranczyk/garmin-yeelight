@@ -27,11 +27,12 @@ def create_app():
     start_update_thread()
     app.logger.handlers = server_logger.handlers
 
-    import routes  # noqa
+    from . import routes  # noqa
 
     app.register_blueprint(routes.bed)
     app.register_blueprint(routes.liv)
     app.register_blueprint(routes.root)
+
     return app
 
 
