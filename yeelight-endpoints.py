@@ -14,6 +14,9 @@ definitions = """- all,All
 
 bulbs = Bulbs()
 
+@app.route("/")
+def root():
+    return "ok!"
 
 @app.route("/endpoints")
 def endpoints():
