@@ -22,10 +22,9 @@ def start_update_thread():
 
 app = Flask(__name__)
 start_update_thread()
-with app.app_context():
-    from garlight import routes
 
+from garlight import routes
 
-@app.route("/")
-def root():
-    return "ok!"
+app.register_blueprint(routes.bed)
+app.register_blueprint(routes.liv)
+app.register_blueprint(routes.root)

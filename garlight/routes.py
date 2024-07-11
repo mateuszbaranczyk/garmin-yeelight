@@ -1,17 +1,26 @@
-from garlight import app, bulbs
-from flask import make_response, Response
+from garlight import bulbs
+from flask import make_response, Response, Blueprint
 from garlight.bulbs import BulbException
 from garlight.endpoints_definitions import definitions
 
+liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
+bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
+root = Blueprint("root", import_name=__name__)
 
-@app.route("/endpoints")
+
+@root.route("/")
+def smoke():
+    return "ok!"
+
+
+@root.route("/endpoints")
 def endpoints():
     response = make_response(definitions, 200)
     response.mimetype = "text/plain"
     return response
 
 
-@app.route("/liv/on-off")
+@liv.route("/on-off")
 def liv_on_off():
     try:
         msg = bulbs.livingroom.on_off()
@@ -22,7 +31,7 @@ def liv_on_off():
     return response
 
 
-@app.route("/bed/on-off")
+@bed.route("/on-off")
 def bed_on_off():
     try:
         msg = bulbs.bedroom.on_off()
