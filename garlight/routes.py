@@ -1,7 +1,9 @@
-from garlight import bulbs
-from flask import make_response, Response, Blueprint
-from garlight.bulbs import BulbException
-from garlight.endpoints_definitions import definitions
+from flask import Blueprint, Response, make_response
+
+from bulbs import BulbException
+from endpoints_definitions import definitions
+from logs import server_logger
+from run import bulbs
 
 liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
 bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
@@ -25,7 +27,7 @@ def liv_on_off():
     try:
         msg = bulbs.livingroom.on_off()
         response = create_response(msg, 200)
-        app.logger.info(f"Livingroom - {msg}")
+        server_logger.info(f"Livingroom - {msg}")
     except BulbException:
         response = create_response("ERROR", 500)
     return response
@@ -36,7 +38,7 @@ def bed_on_off():
     try:
         msg = bulbs.bedroom.on_off()
         response = create_response(msg, 200)
-        app.logger.info(f"Bedroom - {msg}")
+        server_logger.info(f"Bedroom - {msg}")
     except BulbException:
         response = create_response("ERROR", 500)
     return response

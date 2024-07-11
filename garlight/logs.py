@@ -1,6 +1,5 @@
 import logging
 
-
 logging.basicConfig(
     filename="bulbs.log",
     filemode="a",
@@ -9,3 +8,4 @@ logging.basicConfig(
 )
 
 file_logger = logging.getLogger("Bulbs")
+server_logger = logging.getLogger("gunicorn.info")
