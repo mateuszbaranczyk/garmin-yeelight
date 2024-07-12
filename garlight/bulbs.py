@@ -1,3 +1,5 @@
+import os
+
 from yeelight import Bulb, discover_bulbs
 
 from garlight.logs import file_logger
@@ -32,14 +34,14 @@ class HomeBulb:
                 return "Power on"
 
     def check_state(self) -> str:
-        '''-> "on" | "off"'''
+        '''"on" | "off"'''
         data = self.bulb.get_capabilities()
         return data["power"]
 
 
 class Bulbs:
-    liv_id = "0x0000000012ab31ea"
-    bed_id = "0x0000000012bfc856"
+    liv_id = os.getenv("LIV_ID")
+    bed_id = os.getenv("BED_ID")
 
     def __init__(self):
         self.discover_and_assign()
