@@ -14,6 +14,9 @@ class HomeBulb:
         self.bulb = Bulb(ip)
         self.bulb_name = name
 
+    def __repr__(self):
+        return f"{self.bulb_name} - {self.check_state()}"
+
     def on_off(self) -> str:
         power = self.check_state()
         try:
@@ -43,6 +46,7 @@ class Bulbs:
     _instance = None
     liv_id = os.getenv("LIV_ID")
     bed_id = os.getenv("BED_ID")
+    index = 0
 
     def __new__(cls):
         if cls._instance is None:
@@ -51,6 +55,16 @@ class Bulbs:
 
     def __init__(self):
         self.discover_and_assign()
+
+    def __iter__(self):
+        for bulb in self.devices:
+            yield bulb
+
+    def __getitem__(self, index):
+        return self.devices[index]
+
+    def __repr__(self):
+        return str(self.devices)
 
     def discover_and_assign(self):
         self.bulbs = discover_bulbs()
@@ -64,3 +78,8 @@ class Bulbs:
                     self.bedroom = HomeBulb(ip, name="bed")
                 case self.liv_id:
                     self.livingroom = HomeBulb(ip, name="liv")
+
+        self.devices = [self.bedroom, self.livingroom]
+
+    def status(self):
+        return str(self.devices)
