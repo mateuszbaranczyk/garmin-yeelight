@@ -3,4 +3,6 @@ definitions = """- all,All
 --- light_on-off,ON/OFF,/liv/on-off
 -- bed,Sypialnia
 --- light_on-off,ON/OFF,/bed/on-off
+-- sta,Status
+--- status,Status,/status
 """
