@@ -23,6 +23,15 @@ def endpoints():
     return response
 
 
+@root.route("/status")
+def status():
+    bulbs = Bulbs()
+    status = bulbs.status()
+    response = make_response(status, 200)
+    response.mimetype = "text/plain"
+    return response
+
+
 @liv.route("/on-off")
 def liv_on_off():
     try:
