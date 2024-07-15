@@ -3,11 +3,12 @@ from flask import Blueprint, Response, make_response
 from garlight.bulbs import BulbException
 from garlight.endpoints_definitions import definitions
 from garlight.logs import server_logger
-from garlight.run import bulbs
+from garlight.bulbs import Bulbs
 
 liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
 bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
 root = Blueprint("root", import_name=__name__)
+bulbs = Bulbs()
 
 
 @root.route("/")
