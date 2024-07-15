@@ -40,8 +40,14 @@ class HomeBulb:
 
 
 class Bulbs:
+    _instance = None
     liv_id = os.getenv("LIV_ID")
     bed_id = os.getenv("BED_ID")
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Bulbs, cls).__new__(cls)
+        return cls._instance
 
     def __init__(self):
         self.discover_and_assign()
@@ -58,6 +64,3 @@ class Bulbs:
                     self.bedroom = HomeBulb(ip, name="bed")
                 case self.liv_id:
                     self.livingroom = HomeBulb(ip, name="liv")
-
-    def refresh(self):
-        self.discover_and_assign()
