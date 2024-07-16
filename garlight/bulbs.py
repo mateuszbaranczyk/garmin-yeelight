@@ -14,7 +14,7 @@ class HomeBulb:
         self.bulb = Bulb(ip)
         self.bulb_name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.bulb_name} - {self.check_state()}"
 
     def on_off(self) -> str:
@@ -35,7 +35,7 @@ class HomeBulb:
                 self.bulb.turn_on()
                 return "Power on"
 
-    def check_state(self) -> str:
+    def check_state(self) -> str | None:
         '''"on" | "off"'''
         data = self.bulb.get_capabilities()
         return data["power"]
@@ -47,28 +47,29 @@ class Bulbs:
     bed_id = os.getenv("BED_ID")
     index = 0
 
-    def __new__(cls):
+    def __new__(cls) -> "Bulbs":
         if cls._instance is None:
             cls._instance = super(Bulbs, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.bedroom = "Bedroom - offline"
         self.livingroom = "Livingroom - offline"
-        self.devices = [self.bedroom, self.livingroom]
+        self.devices = []
         self.discover_and_assign()
+        self.initialized = True
 
-    def __iter__(self):
+    def __iter__(self) -> HomeBulb | str:
         for bulb in self.devices:
             yield bulb
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> HomeBulb | str:
         return self.devices[index]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.devices)
 
-    def discover_and_assign(self):
+    def discover_and_assign(self) -> None:
         self.bulbs = discover_bulbs()
 
         for bulb in self.bulbs:
@@ -81,5 +82,10 @@ class Bulbs:
                 case self.liv_id:
                     self.livingroom = HomeBulb(ip, name="liv")
 
-    def status(self):
+        self.devices = [
+            self.bedroom,
+            self.livingroom,
+        ]
+
+    def status(self) -> str:
         return str(self.devices)
