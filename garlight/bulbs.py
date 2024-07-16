@@ -43,9 +43,13 @@ class HomeBulb:
 
 class Bulbs:
     _instance = None
+    index = 0
+
     liv_id = os.getenv("LIV_ID")
     bed_id = os.getenv("BED_ID")
-    index = 0
+    bedroom = "Bedroom - offline"
+    livingroom = "Livingroom - offline"
+    devices = []
 
     def __new__(cls) -> "Bulbs":
         if cls._instance is None:
@@ -53,11 +57,7 @@ class Bulbs:
         return cls._instance
 
     def __init__(self) -> None:
-        self.bedroom = "Bedroom - offline"
-        self.livingroom = "Livingroom - offline"
-        self.devices = []
         self.discover_and_assign()
-        self.initialized = True
 
     def __iter__(self) -> HomeBulb | str:
         for bulb in self.devices:
