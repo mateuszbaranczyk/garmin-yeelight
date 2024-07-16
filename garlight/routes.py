@@ -1,9 +1,8 @@
 from flask import Blueprint, Response, make_response
 
-from garlight.bulbs import BulbException
+from garlight.bulbs import BulbException, Bulbs
 from garlight.endpoints_definitions import definitions
-from garlight.logs import server_logger
-from garlight.bulbs import Bulbs
+from garlight.logs import gunicorn_logger
 
 liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
 bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
@@ -37,7 +36,7 @@ def liv_on_off():
     try:
         msg = bulbs.livingroom.on_off()
         response = create_response(msg, 200)
-        server_logger.info(f"Livingroom - {msg}")
+        gunicorn_logger.info(f"Livingroom - {msg}")
     except BulbException:
         response = create_response("ERROR", 500)
     return response
@@ -48,7 +47,7 @@ def bed_on_off():
     try:
         msg = bulbs.bedroom.on_off()
         response = create_response(msg, 200)
-        server_logger.info(f"Bedroom - {msg}")
+        gunicorn_logger.info(f"Bedroom - {msg}")
     except BulbException:
         response = create_response("ERROR", 500)
     return response

@@ -2,7 +2,7 @@ import os
 
 from yeelight import Bulb, discover_bulbs
 
-from garlight.logs import file_logger
+from garlight.logs import gunicorn_logger
 
 
 class BulbException(Exception):
@@ -21,10 +21,9 @@ class HomeBulb:
         power = self.check_state()
         try:
             msg = self.change_state(power)
-            file_logger.info(f"Bulb ({self.bulb_name}) - State changed")
             return f"OK - {msg}"
         except Exception as err:
-            file_logger.error(f"Bulb - {self.bulb_name} - {err}")
+            gunicorn_logger.error(f"Bulb - {self.bulb_name} - {err}")
             raise BulbException(err)
 
     def change_state(self, power: str) -> None:
@@ -54,6 +53,9 @@ class Bulbs:
         return cls._instance
 
     def __init__(self):
+        self.bedroom = "Bedroom - offline"
+        self.livingroom = "Livingroom - offline"
+        self.devices = [self.bedroom, self.livingroom]
         self.discover_and_assign()
 
     def __iter__(self):
@@ -78,8 +80,6 @@ class Bulbs:
                     self.bedroom = HomeBulb(ip, name="bed")
                 case self.liv_id:
                     self.livingroom = HomeBulb(ip, name="liv")
-
-        self.devices = [self.bedroom, self.livingroom]
 
     def status(self):
         return str(self.devices)
