@@ -1,4 +1,5 @@
 from flask_apscheduler import APScheduler
+
 from garlight.bulbs import Bulbs
 
 scheduler = APScheduler()
