@@ -1,17 +1,6 @@
 version: "3"
 
 services:
-  tunnel-gl:
-    container_name: "tunnel-gl"
-    image: cloudflare/cloudflared:latest
-    restart: unless-stopped
-    environment:
-      - TUNNEL_TOKEN=$TOKEN_GL
-    command: tunnel --no-autoupdate run
-    networks:
-      - tunell
-
-
   garlight:
     build: .
     ports:
