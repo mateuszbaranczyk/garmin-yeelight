@@ -22,8 +22,9 @@ tag:
 
 update_version:
 	@echo "Updating version to $(v)"
-	@sed -i '' 's/^version = ".*"/version = "$(version)"/' pyproject.toml
+	@sed 's/^version = ".*"/version = "$(v)"/' pyproject.toml > pyproject.toml.tmp
+	@mv pyproject.toml.tmp pyproject.toml
 	@git add pyproject.toml
-	@git commit -m "Bump v to $(v)"
+	@git commit -m "Bump version to $(v)"
 
 deploy: format lint check_git push tag update_version
