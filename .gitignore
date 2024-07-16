@@ -1,5 +1,4 @@
-
-bulbs.log
+.env
 garlight/__pycache__/*
 __pychache__/*
 __pycache__/endpoints_definitions.cpython-310.pyc
