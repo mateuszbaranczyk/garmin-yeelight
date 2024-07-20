@@ -21,13 +21,15 @@ class HomeBulb:
         power = self.check_state()
         try:
             msg = self.change_state(power)
-            return f"OK - {msg}"
+            return f"{msg}"
         except Exception as err:
             gunicorn_logger.error(f"Bulb - {self.bulb_name} - {err}")
             raise BulbException(err)
 
     def change_state(self, power: str) -> None:
         match power:
+            case "offline":
+                return "Offline"
             case "on":
                 self.bulb.turn_off()
                 return "Power off"
@@ -35,10 +37,11 @@ class HomeBulb:
                 self.bulb.turn_on()
                 return "Power on"
 
-    def check_state(self) -> str | None:
-        '''"on" | "off"'''
+    def check_state(self) -> str:
+        '''"on" | "off" | "offline"'''
         data = self.bulb.get_capabilities()
-        return data["power"]
+        state = data["power"] if data else "offline"
+        return state
 
 
 class Bulbs:
