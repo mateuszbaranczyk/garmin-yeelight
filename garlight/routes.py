@@ -53,7 +53,7 @@ def bed_on_off():
     return response
 
 
-def create_response(msg: str, status: int) -> Response:
+def create_response(msg: str, status: int = 200) -> Response:
     response = make_response(msg, status)
     response.mimetype = "text/plain"
     return response
