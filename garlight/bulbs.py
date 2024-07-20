@@ -59,7 +59,7 @@ class Bulbs:
     def __init__(self) -> None:
         self.discover_and_assign()
 
-    def __iter__(self) -> HomeBulb | str:
+    def __iter__(self):
         for bulb in self.devices:
             yield bulb
 
@@ -78,9 +78,9 @@ class Bulbs:
 
             match id_:
                 case self.bed_id:
-                    self.bedroom = HomeBulb(ip, name="bed")
+                    self.bedroom = HomeBulb(ip, name="Bedroom")
                 case self.liv_id:
-                    self.livingroom = HomeBulb(ip, name="liv")
+                    self.livingroom = HomeBulb(ip, name="Livingroom")
 
         self.devices = [
             self.bedroom,
