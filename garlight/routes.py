@@ -1,6 +1,6 @@
 from flask import Blueprint, Response, make_response
 
-from garlight.bulbs import BulbException, Bulbs
+from garlight.bulbs import BulbException, Bulbs, HomeBulb
 from garlight.endpoints_definitions import definitions
 from garlight.logs import gunicorn_logger
 
@@ -17,37 +17,39 @@ def smoke():
 
 @root.route("/endpoints")
 def endpoints():
-    response = make_response(definitions, 200)
+    response = make_response(definitions)
     response.mimetype = "text/plain"
     return response
 
 
 @root.route("/status")
 def status():
-    bulbs = Bulbs()
+    bulbs.discover_and_assign()
     status = bulbs.status()
-    response = make_response(status, 200)
+    response = make_response(status)
     response.mimetype = "text/plain"
     return response
 
 
 @liv.route("/on-off")
 def liv_on_off():
-    try:
-        msg = bulbs.livingroom.on_off()
-        response = create_response(msg, 200)
-        gunicorn_logger.info(f"Livingroom - {msg}")
-    except BulbException:
-        response = create_response("ERROR", 500)
+    response = change_request(bulb=bulbs.livingroom)
     return response
 
 
 @bed.route("/on-off")
 def bed_on_off():
+    response = change_request(bulb=bulbs.bedroom)
+    return response
+
+
+def change_request(bulb: HomeBulb) -> Response:
     try:
-        msg = bulbs.bedroom.on_off()
-        response = create_response(msg, 200)
-        gunicorn_logger.info(f"Bedroom - {msg}")
+        msg = bulb.on_off()
+        response = create_response(msg)
+        gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
+    except AttributeError:
+        response = create_response(f"{bulb.bulb_name} - Offline")
     except BulbException:
         response = create_response("ERROR", 500)
     return response
