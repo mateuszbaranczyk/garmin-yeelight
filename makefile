@@ -27,4 +27,4 @@ update_version:
 	@git add pyproject.toml
 	@git commit -m "Bump version to $(v)"
 
-deploy: format lint check_git push tag update_version
+deploy: format lint check_git tag update_version push
