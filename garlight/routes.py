@@ -45,7 +45,7 @@ def bed_on_off():
 
 def change_request(bulb: HomeBulb | str) -> Response:
     if type(bulb) is str:
-        response = create_response(f"{bulb.bulb_name} - Offline")
+        response = create_response("Offline")
     else:
         try:
             msg = bulb.on_off()
