@@ -2,7 +2,8 @@ services:
   garlight:
     build: .
     container_name: "garlight"
-    network_mode: "host"
+    restart: always
     environment:
       - LIV_ID=$LIV_ID
       - BED_ID=$BED_ID
+    network_mode: "host"
