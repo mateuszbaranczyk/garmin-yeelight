@@ -1,13 +1,12 @@
 from flask import Blueprint, Response, make_response
 
-from garlight.bulbs import BulbException, Bulbs, HomeBulb
+from garlight.bulbs import BulbException, HomeBulb
 from garlight.endpoints_definitions import definitions
 from garlight.logs import gunicorn_logger
 
 liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
 bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
 root = Blueprint("root", import_name=__name__)
-bulbs = Bulbs()
 
 
 @root.route("/")
@@ -17,6 +16,8 @@ def smoke():
 
 @root.route("/endpoints")
 def endpoints():
+    # get all from db
+    # create endpoint definitions
     response = make_response(definitions)
     response.mimetype = "text/plain"
     return response
@@ -24,22 +25,16 @@ def endpoints():
 
 @root.route("/status")
 def status():
-    bulbs.discover_and_assign()
-    status = bulbs.status()
+    # get all from db
+    # chack status
     response = make_response(status)
-    response.mimetype = "text/plain"
     return response
 
 
-@liv.route("/on-off")
-def liv_on_off():
-    response = change_request(bulb=bulbs.livingroom)
-    return response
-
-
-@bed.route("/on-off")
-def bed_on_off():
-    response = change_request(bulb=bulbs.bedroom)
+@root.route("/on-off/<str:name>")
+def on_off(name: str):
+    bulb = HomeBulb(name)
+    response = change_request(bulb=bulb)
     return response
 
 
