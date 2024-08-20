@@ -34,8 +34,8 @@ class HomeBulb:
             gunicorn_logger.error(f"Bulb - {self.bulb_name} - {err}")
             raise BulbException(err)
 
-    def change_state(self, power: str) -> None:
-        match power:
+    def change_state(self, power_status: str) -> str:
+        match power_status:
             case "offline":
                 return "Offline"
             case "on":
