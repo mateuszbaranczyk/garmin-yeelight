@@ -34,7 +34,7 @@ def status():
 @bulb.route("/on-off/<str:name>")
 def on_off(name: str):
     bulb = HomeBulb(name)
-    response = change_request(bulb=bulb)
+    response = change_request(bulb)
     return response
 
 
