@@ -5,3 +5,4 @@ __pycache__/endpoints_definitions.cpython-310.pyc
 __pycache__/garlight.cpython-310.pyc
 __pycache__/logs.cpython-310.pyc
 __pycache__/routes.cpython-310.pyc
+instance/garlight.db
