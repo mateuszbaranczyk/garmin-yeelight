@@ -5,6 +5,7 @@ from yeelight import Bulb, discover_bulbs
 from garlight.logs import gunicorn_logger
 from garlight.models import BulbModel
 from garlight.models import db
+from sqlalchemy.sql.expression import literal
 
 
 class BulbException(Exception):
@@ -54,7 +55,6 @@ class HomeBulb:
 
 def discover_and_assign() -> None:
     devices = discover_bulbs()
-
     bulbs = [
         BulbModel(
             id=bulb["capabilities"]["id"],
@@ -62,6 +62,15 @@ def discover_and_assign() -> None:
             name=bulb["capabilities"]["id"],
         )
         for bulb in devices
+        if not bulb_exists(bulb["capabilities"]["id"])
     ]
+
     db.session.add_all(bulbs)
     db.session.commit()
+
+
+def bulb_exists(bulb_id: str) -> bool:
+    exists = (
+        db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
+    )
+    return exists[0] if exists[0] else False
