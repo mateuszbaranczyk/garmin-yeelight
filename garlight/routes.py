@@ -38,18 +38,13 @@ def on_off(name: str):
     return response
 
 
-def change_request(bulb: HomeBulb | str) -> Response:
-    if type(bulb) is str:
-        response = create_response("Offline")
-    else:
-        try:
-            msg = bulb.on_off()
-            response = create_response(msg)
-            gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
-        except AttributeError:
-            response = create_response(f"{bulb.bulb_name} - Offline")
-        except BulbException:
-            response = create_response("ERROR", 500)
+def change_request(bulb: HomeBulb) -> Response:
+    try:
+        msg = bulb.on_off()
+        response = create_response(msg)
+        gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
+    except BulbException:
+        response = create_response("ERROR", 500)
     return response
 
 
