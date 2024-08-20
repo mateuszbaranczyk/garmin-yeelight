@@ -4,8 +4,8 @@ from garlight.bulbs import BulbException, HomeBulb
 from garlight.endpoints_definitions import definitions
 from garlight.logs import gunicorn_logger
 
-bulb = Blueprint("liv", import_name=__name__, url_prefix="")
-bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
+bulb = Blueprint("bulb", import_name=__name__, url_prefix="")
+manage = Blueprint("manage", import_name=__name__, url_prefix="")
 root = Blueprint("root", import_name=__name__)
 
 
