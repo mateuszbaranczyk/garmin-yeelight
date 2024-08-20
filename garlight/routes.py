@@ -33,11 +33,18 @@ def status():
     return response
 
 
-@bulb.route("/on-off/<str:name>")
+@bulb.route("/on-off/<string:name>")
 def on_off(name: str):
     bulb = HomeBulb(name)
     response = change_request(bulb)
     return response
+
+
+@manage.route("/list")
+def list_devices():
+    devices = db.session.execute(db.select(BulbModel)).scalars()
+    result = {"devices": devices}
+    return jsonify(result)
 
 
 def change_request(bulb: HomeBulb) -> Response:
