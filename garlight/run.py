@@ -18,7 +18,7 @@ def create_app():
 
     from garlight import routes  # noqa
 
-    app.register_blueprint(routes.bed)
+    app.register_blueprint(routes.manage)
     app.register_blueprint(routes.bulb)
     app.register_blueprint(routes.root)
 
