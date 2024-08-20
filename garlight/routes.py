@@ -4,7 +4,7 @@ from garlight.bulbs import BulbException, HomeBulb
 from garlight.endpoints_definitions import definitions
 from garlight.logs import gunicorn_logger
 
-liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
+bulb = Blueprint("liv", import_name=__name__, url_prefix="")
 bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
 root = Blueprint("root", import_name=__name__)
 
@@ -14,7 +14,7 @@ def smoke():
     return "ok!"
 
 
-@root.route("/endpoints")
+@bulb.route("/endpoints")
 def endpoints():
     # get all from db
     # create endpoint definitions
@@ -23,7 +23,7 @@ def endpoints():
     return response
 
 
-@root.route("/status")
+@bulb.route("/status")
 def status():
     # get all from db
     # chack status
@@ -31,7 +31,7 @@ def status():
     return response
 
 
-@root.route("/on-off/<str:name>")
+@bulb.route("/on-off/<str:name>")
 def on_off(name: str):
     bulb = HomeBulb(name)
     response = change_request(bulb=bulb)

@@ -3,6 +3,7 @@ from flask import Flask
 from garlight.logs import gunicorn_logger
 from garlight.models import db
 
+
 def create_app():
     app = Flask(__name__)
 
@@ -18,7 +19,7 @@ def create_app():
     from garlight import routes  # noqa
 
     app.register_blueprint(routes.bed)
-    app.register_blueprint(routes.liv)
+    app.register_blueprint(routes.bulb)
     app.register_blueprint(routes.root)
 
     return app
