@@ -1,8 +1,7 @@
 from flask import Flask
 
 from garlight.logs import gunicorn_logger
-from garlight.scheduler import scheduler
-from models import db
+from garlight.models import db
 
 def create_app():
     app = Flask(__name__)
@@ -21,11 +20,6 @@ def create_app():
     app.register_blueprint(routes.bed)
     app.register_blueprint(routes.liv)
     app.register_blueprint(routes.root)
-
-    scheduler.init_app(app)
-    with app.app_context():
-        scheduler.start()
-        gunicorn_logger.info("Updater started")
 
     return app
 
