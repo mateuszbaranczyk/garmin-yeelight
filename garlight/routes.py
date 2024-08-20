@@ -1,11 +1,12 @@
-from flask import Blueprint, Response, make_response, jsonify, request
+from http import HTTPStatus
+
+from flask import Blueprint, Response, make_response, request
 
 from garlight.bulbs import BulbException, HomeBulb
+from garlight.database import db
 from garlight.endpoints_definitions import definitions
 from garlight.logs import gunicorn_logger
-from garlight.database import db
 from garlight.models import BulbModel
-from http import HTTPStatus
 
 bulb = Blueprint("bulb", import_name=__name__)
 manage = Blueprint("manage", import_name=__name__)

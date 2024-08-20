@@ -1,11 +1,8 @@
-import os
-
+from sqlalchemy.sql.expression import literal
 from yeelight import Bulb, discover_bulbs
 
 from garlight.logs import gunicorn_logger
-from garlight.models import BulbModel
-from garlight.models import db
-from sqlalchemy.sql.expression import literal
+from garlight.models import BulbModel, db
 
 
 class BulbException(Exception):
@@ -70,7 +67,5 @@ def discover_and_assign() -> None:
 
 
 def bulb_exists(bulb_id: str) -> bool:
-    exists = (
-        db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
-    )
+    exists = db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
     return exists[0] if exists[0] else False

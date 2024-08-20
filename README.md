@@ -15,7 +15,8 @@ Here is simple diagram how it works.
     - i can call devvice by its name
 
 - Manage
-    - set names
+    - list all devices
+    - set names by id
     - endpoints auto setup
 
 - Endpoints 
