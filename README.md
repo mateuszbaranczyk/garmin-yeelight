@@ -10,8 +10,9 @@ Here is simple diagram how it works.
 
 ### TODO
 - Detect devices
-    - detect
-    - save ids in db
+    - i can detect all devices in lan
+    - all of then will be saved in db
+    - i can call devvice by its name
 
 - Manage
     - set names
