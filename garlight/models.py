@@ -12,5 +12,4 @@ class BulbModel(db.Model):
 
     def as_dict(self):
         dict_repr = self.__dict__
-        del dict_repr["_sa_instance_state"]
         return dict_repr
