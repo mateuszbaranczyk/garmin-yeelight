@@ -3,6 +3,8 @@ import os
 from yeelight import Bulb, discover_bulbs
 
 from garlight.logs import gunicorn_logger
+from garlight.models import BulbModel
+from garlight.models import db
 
 
 class BulbException(Exception):
@@ -10,12 +12,18 @@ class BulbException(Exception):
 
 
 class HomeBulb:
-    def __init__(self, ip: str, name: str) -> None:
-        self.bulb = Bulb(ip)
-        self.bulb_name = name
+    def __init__(self, name: str) -> None:
+        self.model = self.get_from_db(name)
+        self.bulb = Bulb(ip=self.model.ip)
 
     def __repr__(self) -> str:
-        return f"{self.bulb_name} - {self.check_state()}"
+        return f"{self.model} - {self.check_state()}"
+
+    def get_from_db(self, name: str) -> BulbModel:
+        model = db.session.execute(
+            db.select(BulbModel).filter_by(name=name)
+        ).scalar_one()
+        return model
 
     def on_off(self) -> str:
         power = self.check_state()
@@ -44,51 +52,16 @@ class HomeBulb:
         return state
 
 
-class Bulbs:
-    _instance = None
-    index = 0
+def discover_and_assign() -> None:
+    devices = discover_bulbs()
 
-    liv_id = os.getenv("LIV_ID")
-    bed_id = os.getenv("BED_ID")
-    bedroom = "Bedroom - offline"
-    livingroom = "Livingroom - offline"
-    devices = []
-
-    def __new__(cls) -> "Bulbs":
-        if cls._instance is None:
-            cls._instance = super(Bulbs, cls).__new__(cls)
-        return cls._instance
-
-    def __init__(self) -> None:
-        self.discover_and_assign()
-
-    def __iter__(self):
-        for bulb in self.devices:
-            yield bulb
-
-    def __getitem__(self, index) -> HomeBulb | str:
-        return self.devices[index]
-
-    def __repr__(self) -> str:
-        return str(self.devices)
-
-    def discover_and_assign(self) -> None:
-        self.bulbs = discover_bulbs()
-
-        for bulb in self.bulbs:
-            id_ = bulb["capabilities"]["id"]
-            ip = bulb["ip"]
-
-            match id_:
-                case self.bed_id:
-                    self.bedroom = HomeBulb(ip, name="Bedroom")
-                case self.liv_id:
-                    self.livingroom = HomeBulb(ip, name="Livingroom")
-
-        self.devices = [
-            self.bedroom,
-            self.livingroom,
-        ]
-
-    def status(self) -> str:
-        return str(self.devices)
+    bulbs = [
+        BulbModel(
+            id=bulb["capabilities"]["id"],
+            ip=bulb["ip"],
+            name=bulb["capabilities"]["id"],
+        )
+        for bulb in devices
+    ]
+    db.session.add_all(bulbs)
+    db.session.commit()
