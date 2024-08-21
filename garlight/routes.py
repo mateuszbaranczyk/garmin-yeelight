@@ -4,7 +4,7 @@ from flask import Blueprint, Response, make_response, request
 
 from garlight.bulbs import BulbException, HomeBulb
 from garlight.database import db
-from garlight.endpoints_definitions import definitions
+from garlight.endpoints_definitions import definitions, create_definitions
 from garlight.logs import gunicorn_logger
 from garlight.models import BulbModel
 
@@ -20,9 +20,10 @@ def smoke():
 
 @bulb.route("/endpoints")
 def endpoints():
-    # get all from db
-    # create endpoint definitions
-    response = make_response(definitions)
+    devices = db.session.execute(db.select(BulbModel)).scalars()
+    names = [device.name for device in devices]
+    endpoints = create_definitions(devices=names)
+    response = make_response(endpoints)
     response.mimetype = "text/plain"
     return response
 
