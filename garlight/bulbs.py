@@ -1,5 +1,5 @@
 from sqlalchemy.sql.expression import literal
-from yeelight import Bulb, discover_bulbs
+from yeelight import Bulb, discover_bulbs, CronType, SceneClass
 
 from garlight.logs import gunicorn_logger
 from garlight.models import BulbModel, db
@@ -44,10 +44,35 @@ class HomeBulb:
                 return "Power on"
 
     def check_state(self) -> str:
-        '''"on" | "off" | "offline"'''
+        """'on' | 'off' | 'offline'"""
         data = self.bulb.get_capabilities()
         state = data["power"] if data else "offline"
         return state
+
+    def set_timier(self, minutes: int = 15):
+        status = self.bulb.cron_add(CronType.off, minutes)
+        if status == "ok":
+            return f"Timer to {minutes} min."
+        return "Failed"
+
+    def set_color(
+        self, red: int, green: int, blue: int, brightness: int
+    ) -> str:
+        """Colors in range 0-255, brightness 0-100"""
+        status = self.bulb.set_scene(
+            SceneClass.COLOR, red, green, blue, brightness
+        )
+        return self._status_return(status)
+
+    def set_temperature(self, temperature: int, brightness: int) -> str:
+        """Temperature in range 1700-6500, brightness 0-100"""
+        status = self.bulb.set_scene(SceneClass.CT, temperature, brightness)
+        return self._status_return(status)
+
+    def _status_return(status: str) -> str:
+        if status == "ok":
+            return str.capitalize(status)
+        return "Failed"
 
 
 def discover_and_assign() -> None:
@@ -67,5 +92,7 @@ def discover_and_assign() -> None:
 
 
 def bulb_exists(bulb_id: str) -> bool:
-    exists = db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
+    exists = (
+        db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
+    )
     return exists[0] if exists[0] else False
