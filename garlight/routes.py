@@ -43,6 +43,33 @@ def on_off(name: str):
     return response
 
 
+@bulb.route("/set-warm/<string:name>")
+def set_warm(name: str):
+    temperature = 6000
+    brightness = 40
+    bulb = HomeBulb(name)
+    msg = bulb.set_temperature(temperature, brightness)
+    return msg
+
+
+@bulb.route("/set-timer/<string:name>")
+def set_timer(name: str):
+    bulb = HomeBulb(name)
+    msg = bulb.set_timier()
+    return msg
+
+
+@bulb.route("/set-color/<string:name>")
+def set_color(name: str):
+    red = 252
+    green = 3
+    blue = 115
+    brightness = 40
+    bulb = HomeBulb(name)
+    msg = bulb.set_color(red, green, blue, brightness)
+    return msg
+
+
 @manage.route("/list")
 def list_devices():
     devices = db.session.execute(db.select(BulbModel)).scalars()
