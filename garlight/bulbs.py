@@ -59,6 +59,7 @@ class HomeBulb:
         self, red: int, green: int, blue: int, brightness: int
     ) -> str:
         """Colors in range 0-255, brightness 0-100"""
+        self._validate_colors(red, green, blue, brightness)
         status = self.bulb.set_scene(
             SceneClass.COLOR, red, green, blue, brightness
         )
@@ -66,6 +67,7 @@ class HomeBulb:
 
     def set_temperature(self, temperature: int, brightness: int) -> str:
         """Temperature in range 1700-6500, brightness 0-100"""
+        self._validate_temperature(temperature, brightness)
         status = self.bulb.set_scene(SceneClass.CT, temperature, brightness)
         return self._status_return(status)
 
@@ -73,6 +75,25 @@ class HomeBulb:
         if status == "ok":
             return str.capitalize(status)
         return "Failed"
+
+    def _validate_temperature(sefl, temperature: int, brightness: int) -> None:
+        if not temperature in range(1700, 6501):
+            raise ValueError("Temperature out of range!")
+
+        if not brightness in range(0, 101):
+            raise ValueError("Brightness out of range!")
+
+    def _validate_colors(
+        self, red: int, green: int, blue: int, brightness: int
+    ) -> None:
+        if not red in range(0, 256):
+            raise ValueError("Red out of range!")
+        if not green in range(0, 256):
+            raise ValueError("Green out of range!")
+        if not blue in range(0, 256):
+            raise ValueError("Blue out of range!")
+        if not brightness in range(0, 101):
+            raise ValueError("Brightness out of range!")
 
 
 def discover_and_assign() -> None:
