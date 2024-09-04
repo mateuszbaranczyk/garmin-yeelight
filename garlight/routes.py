@@ -1,10 +1,17 @@
 from http import HTTPStatus
 
-from flask import Blueprint, Response, make_response, request
+from flask import (
+    Blueprint,
+    Response,
+    make_response,
+    request,
+    url_for,
+    redirect,
+)
 
-from garlight.bulbs import BulbException, HomeBulb
+from garlight.bulbs import BulbException, HomeBulb, discover_and_assign
 from garlight.database import db
-from garlight.endpoints_definitions import definitions, create_definitions
+from garlight.endpoints_definitions import create_definitions
 from garlight.logs import gunicorn_logger
 from garlight.models import BulbModel
 
@@ -30,10 +37,10 @@ def endpoints():
 
 @bulb.route("/status")
 def status():
-    # get all from db
-    # chack status
-    response = make_response(status)
-    return response
+    saved_devices = db.session.execute(db.select(BulbModel)).scalars()
+    bulbs = [HomeBulb(device.name) for device in saved_devices]
+    statuses = [bulb.state for bulb in bulbs]
+    return {"statuses": statuses}
 
 
 @bulb.route("/on-off/<string:name>")
