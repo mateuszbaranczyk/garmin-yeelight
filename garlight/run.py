@@ -16,7 +16,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    from garlight import routes  # noqa
+    from garlight.routing import routes  # noqa
 
     app.register_blueprint(routes.manage)
     app.register_blueprint(routes.bulb)
