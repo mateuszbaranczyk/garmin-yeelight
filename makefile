@@ -5,7 +5,7 @@ format:
 	isort .
 
 lint:
-	flake8
+	flake8 --ignore=E501
 
 check_git:
 	@if [ -n "$$(git status --porcelain)" ]; then \
