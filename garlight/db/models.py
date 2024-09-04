@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
-from garlight.database import db
+from garlight.db.database import db
 
 
 class BulbModel(db.Model):
