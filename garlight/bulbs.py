@@ -120,4 +120,6 @@ def bulb_exists(bulb_id: str) -> bool:
     exists = (
         db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
     )
-    return exists[0] if exists[0] else False
+    if exists:
+        return exists[0]
+    return False
