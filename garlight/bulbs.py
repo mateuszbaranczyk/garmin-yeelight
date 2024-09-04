@@ -1,8 +1,8 @@
-import os
-
-from yeelight import Bulb, discover_bulbs
+from sqlalchemy.sql.expression import literal
+from yeelight import Bulb, CronType, SceneClass, discover_bulbs
 
 from garlight.logs import gunicorn_logger
+from garlight.models import BulbModel, db
 
 
 class BulbException(Exception):
@@ -10,12 +10,22 @@ class BulbException(Exception):
 
 
 class HomeBulb:
-    def __init__(self, ip: str, name: str) -> None:
-        self.bulb = Bulb(ip)
-        self.bulb_name = name
+    def __init__(self, name: str) -> None:
+        self.model = self.get_from_db(name)
+        self.bulb = Bulb(ip=self.model.ip)
 
     def __repr__(self) -> str:
-        return f"{self.bulb_name} - {self.check_state()}"
+        return f"{self.model.name} - {self.check_state()}"
+
+    @property
+    def state(self):
+        return f"{self.model.name} - {self.check_state()}"
+
+    def get_from_db(self, name: str) -> BulbModel:
+        model = db.session.execute(
+            db.select(BulbModel).filter_by(name=name)
+        ).scalar_one()
+        return model
 
     def on_off(self) -> str:
         power = self.check_state()
@@ -26,8 +36,8 @@ class HomeBulb:
             gunicorn_logger.error(f"Bulb - {self.bulb_name} - {err}")
             raise BulbException(err)
 
-    def change_state(self, power: str) -> None:
-        match power:
+    def change_state(self, power_status: str) -> str:
+        match power_status:
             case "offline":
                 return "Offline"
             case "on":
@@ -38,57 +48,72 @@ class HomeBulb:
                 return "Power on"
 
     def check_state(self) -> str:
-        '''"on" | "off" | "offline"'''
+        """'on' | 'off' | 'offline'"""
         data = self.bulb.get_capabilities()
         state = data["power"] if data else "offline"
         return state
 
+    def set_timier(self, minutes: int = 15):
+        status = self.bulb.cron_add(CronType.off, minutes)
+        if status == "ok":
+            return f"Timer to {minutes} min."
+        return "Failed"
 
-class Bulbs:
-    _instance = None
-    index = 0
+    def set_color(self, red: int, green: int, blue: int, brightness: int) -> str:
+        """Colors in range 0-255, brightness 0-100"""
+        self._validate_colors(red, green, blue, brightness)
+        status = self.bulb.set_scene(SceneClass.COLOR, red, green, blue, brightness)
+        return self._status_return(status)
 
-    liv_id = os.getenv("LIV_ID")
-    bed_id = os.getenv("BED_ID")
-    bedroom = "Bedroom - offline"
-    livingroom = "Livingroom - offline"
-    devices = []
+    def set_temperature(self, temperature: int, brightness: int) -> str:
+        """Temperature in range 1700-6500, brightness 0-100"""
+        self._validate_temperature(temperature, brightness)
+        status = self.bulb.set_scene(SceneClass.CT, temperature, brightness)
+        return self._status_return(status)
 
-    def __new__(cls) -> "Bulbs":
-        if cls._instance is None:
-            cls._instance = super(Bulbs, cls).__new__(cls)
-        return cls._instance
+    def _status_return(status: str) -> str:
+        if status == "ok":
+            return str.capitalize(status)
+        return "Failed"
 
-    def __init__(self) -> None:
-        self.discover_and_assign()
+    def _validate_temperature(sefl, temperature: int, brightness: int) -> None:
+        if temperature not in range(1700, 6501):
+            raise ValueError("Temperature out of range!")
 
-    def __iter__(self):
-        for bulb in self.devices:
-            yield bulb
+        if brightness not in range(0, 101):
+            raise ValueError("Brightness out of range!")
 
-    def __getitem__(self, index) -> HomeBulb | str:
-        return self.devices[index]
+    def _validate_colors(
+        self, red: int, green: int, blue: int, brightness: int
+    ) -> None:
+        if red not in range(0, 256):
+            raise ValueError("Red out of range!")
+        if green not in range(0, 256):
+            raise ValueError("Green out of range!")
+        if blue not in range(0, 256):
+            raise ValueError("Blue out of range!")
+        if brightness not in range(0, 101):
+            raise ValueError("Brightness out of range!")
 
-    def __repr__(self) -> str:
-        return str(self.devices)
 
-    def discover_and_assign(self) -> None:
-        self.bulbs = discover_bulbs()
+def discover_and_assign() -> None:
+    devices = discover_bulbs()
+    bulbs = [
+        BulbModel(
+            id=bulb["capabilities"]["id"],
+            ip=bulb["ip"],
+            name=bulb["capabilities"]["id"],
+        )
+        for bulb in devices
+        if not bulb_exists(bulb["capabilities"]["id"])
+    ]
 
-        for bulb in self.bulbs:
-            id_ = bulb["capabilities"]["id"]
-            ip = bulb["ip"]
+    db.session.add_all(bulbs)
+    db.session.commit()
 
-            match id_:
-                case self.bed_id:
-                    self.bedroom = HomeBulb(ip, name="Bedroom")
-                case self.liv_id:
-                    self.livingroom = HomeBulb(ip, name="Livingroom")
 
-        self.devices = [
-            self.bedroom,
-            self.livingroom,
-        ]
-
-    def status(self) -> str:
-        return str(self.devices)
+def bulb_exists(bulb_id: str) -> bool:
+    exists = db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
+    if exists:
+        return exists[0]
+    return False

@@ -1,13 +1,17 @@
-from flask import Blueprint, Response, make_response
+from http import HTTPStatus
 
-from garlight.bulbs import BulbException, Bulbs, HomeBulb
-from garlight.endpoints_definitions import definitions
+from flask import (Blueprint, Response, make_response, redirect, request,
+                   url_for)
+
+from garlight.bulbs import BulbException, HomeBulb, discover_and_assign
+from garlight.database import db
+from garlight.endpoints_definitions import create_definitions
 from garlight.logs import gunicorn_logger
+from garlight.models import BulbModel
 
-liv = Blueprint("liv", import_name=__name__, url_prefix="/liv")
-bed = Blueprint("bed", import_name=__name__, url_prefix="/bed")
+bulb = Blueprint("bulb", import_name=__name__)
+manage = Blueprint("manage", import_name=__name__)
 root = Blueprint("root", import_name=__name__)
-bulbs = Bulbs()
 
 
 @root.route("/")
@@ -15,50 +19,94 @@ def smoke():
     return "ok!"
 
 
-@root.route("/endpoints")
+@bulb.route("/endpoints")
 def endpoints():
-    response = make_response(definitions)
+    devices = db.session.execute(db.select(BulbModel)).scalars()
+    names = [device.name for device in devices]
+    endpoints = create_definitions(devices=names)
+    response = make_response(endpoints)
     response.mimetype = "text/plain"
     return response
 
 
-@root.route("/status")
+@bulb.route("/status")
 def status():
-    bulbs.discover_and_assign()
-    status = bulbs.status()
-    response = make_response(status)
-    response.mimetype = "text/plain"
+    saved_devices = db.session.execute(db.select(BulbModel)).scalars()
+    bulbs = [HomeBulb(device.name) for device in saved_devices]
+    statuses = [bulb.state for bulb in bulbs]
+    return {"statuses": statuses}
+
+
+@bulb.route("/on-off/<string:name>")
+def on_off(name: str):
+    bulb = HomeBulb(name)
+    response = change_request(bulb)
     return response
 
 
-@liv.route("/on-off")
-def liv_on_off():
-    response = change_request(bulb=bulbs.livingroom)
+@bulb.route("/set-warm/<string:name>")
+def set_warm(name: str):
+    temperature = 6000
+    brightness = 40
+    bulb = HomeBulb(name)
+    msg = bulb.set_temperature(temperature, brightness)
+    return msg
+
+
+@bulb.route("/set-timer/<string:name>")
+def set_timer(name: str):
+    bulb = HomeBulb(name)
+    msg = bulb.set_timier()
+    return msg
+
+
+@bulb.route("/set-color/<string:name>")
+def set_color(name: str):
+    red = 252
+    green = 3
+    blue = 115
+    brightness = 40
+    bulb = HomeBulb(name)
+    msg = bulb.set_color(red, green, blue, brightness)
+    return msg
+
+
+@manage.route("/list")
+def list_devices():
+    devices = db.session.execute(db.select(BulbModel)).scalars().all()
+    result = {"devices": [device.name] for device in devices}
+    return result
+
+
+@manage.route("/set-name/<string:name>", methods=["POST"])
+def set_name(name: str):
+    new_name = request.json.get("name", None)
+    if new_name:
+        bulb = db.one_or_404(db.select(BulbModel).filter_by(name=name))
+        bulb.name = new_name
+        db.session.commit()
+        return {"name": bulb.name}
+    return {"msg": "provide name"}, HTTPStatus.BAD_REQUEST
+
+
+@manage.route("/discover")
+def discover():
+    discover_and_assign()
+    url = url_for("manage.list_devices")
+    return redirect(url)
+
+
+def change_request(bulb: HomeBulb) -> Response:
+    try:
+        msg = bulb.on_off()
+        response = create_response(msg)
+        gunicorn_logger.info(f"{bulb.model.name} - {msg}")
+    except BulbException:
+        response = create_response("ERROR", HTTPStatus.INTERNAL_SERVER_ERROR)
     return response
 
 
-@bed.route("/on-off")
-def bed_on_off():
-    response = change_request(bulb=bulbs.bedroom)
-    return response
-
-
-def change_request(bulb: HomeBulb | str) -> Response:
-    if type(bulb) is str:
-        response = create_response("Offline")
-    else:
-        try:
-            msg = bulb.on_off()
-            response = create_response(msg)
-            gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
-        except AttributeError:
-            response = create_response(f"{bulb.bulb_name} - Offline")
-        except BulbException:
-            response = create_response("ERROR", 500)
-    return response
-
-
-def create_response(msg: str, status: int = 200) -> Response:
+def create_response(msg: str, status: int = HTTPStatus.OK) -> Response:
     response = make_response(msg, status)
     response.mimetype = "text/plain"
     return response

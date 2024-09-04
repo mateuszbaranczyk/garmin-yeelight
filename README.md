@@ -6,3 +6,25 @@ It was created for fun to resolve use case and create infrastructure.
 Here is simple diagram how it works.
 
 ![Diagram](gl.drawio.png)
+
+
+### TODO
+- Detect devices
+    - i can detect all devices in lan +
+    - all of then will be saved in db +
+    - i can call devvice by its name +
+
+- Manage
+    - list all devices +
+    - set names by id +
+    - endpoints auto setup +
+
+- Endpoints 
+    - one endpoint for function with device as arguent +
+
+- Functions 
+    - on/of +
+    - timer
+    - efects
+
+- Tests
