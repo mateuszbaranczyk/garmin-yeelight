@@ -8,7 +8,7 @@ from flask import (
 
 from garlight.bulbs import BulbException, HomeBulb
 from garlight.database import db
-from garlight.endpoints_definitions import create_definitions
+from garlight.routing.endpoints_definitions import create_definitions
 from garlight.logs import gunicorn_logger
 from garlight.models import BulbModel
 
