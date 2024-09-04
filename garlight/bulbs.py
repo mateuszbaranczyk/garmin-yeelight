@@ -59,10 +59,14 @@ class HomeBulb:
             return f"Timer to {minutes} min."
         return "Failed"
 
-    def set_color(self, red: int, green: int, blue: int, brightness: int) -> str:
+    def set_color(
+        self, red: int, green: int, blue: int, brightness: int
+    ) -> str:
         """Colors in range 0-255, brightness 0-100"""
         self._validate_colors(red, green, blue, brightness)
-        status = self.bulb.set_scene(SceneClass.COLOR, red, green, blue, brightness)
+        status = self.bulb.set_scene(
+            SceneClass.COLOR, red, green, blue, brightness
+        )
         return self._status_return(status)
 
     def set_temperature(self, temperature: int, brightness: int) -> str:
@@ -71,7 +75,7 @@ class HomeBulb:
         status = self.bulb.set_scene(SceneClass.CT, temperature, brightness)
         return self._status_return(status)
 
-    def _status_return(status: str) -> str:
+    def _status_return(sefl, status: str) -> str:
         if status == "ok":
             return str.capitalize(status)
         return "Failed"
@@ -113,7 +117,9 @@ def discover_and_assign() -> None:
 
 
 def bulb_exists(bulb_id: str) -> bool:
-    exists = db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
+    exists = (
+        db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
+    )
     if exists:
         return exists[0]
     return False

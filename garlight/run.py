@@ -16,11 +16,12 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    from garlight.routing import routes  # noqa
+    from garlight.routing import bulbs_routes  # noqa
+    from garlight.routing import manage_routes  # noqa
 
-    app.register_blueprint(routes.manage)
-    app.register_blueprint(routes.bulb)
-    app.register_blueprint(routes.root)
+    app.register_blueprint(manage_routes.manage)
+    app.register_blueprint(manage_routes.root)
+    app.register_blueprint(bulbs_routes.bulb)
 
     return app
 
