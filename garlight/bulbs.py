@@ -1,8 +1,8 @@
 from sqlalchemy.sql.expression import literal
 from yeelight import Bulb, CronType, SceneClass, discover_bulbs
 
-from garlight.logs import gunicorn_logger
 from garlight.db.models import BulbModel, db
+from garlight.logs import gunicorn_logger
 
 
 class BulbException(Exception):
@@ -59,14 +59,10 @@ class HomeBulb:
             return f"Timer to {minutes} min."
         return "Failed"
 
-    def set_color(
-        self, red: int, green: int, blue: int, brightness: int
-    ) -> str:
+    def set_color(self, red: int, green: int, blue: int, brightness: int) -> str:
         """Colors in range 0-255, brightness 0-100"""
         self._validate_colors(red, green, blue, brightness)
-        status = self.bulb.set_scene(
-            SceneClass.COLOR, red, green, blue, brightness
-        )
+        status = self.bulb.set_scene(SceneClass.COLOR, red, green, blue, brightness)
         return self._status_return(status)
 
     def set_temperature(self, temperature: int, brightness: int) -> str:
@@ -117,9 +113,7 @@ def discover_and_assign() -> None:
 
 
 def bulb_exists(bulb_id: str) -> bool:
-    exists = (
-        db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
-    )
+    exists = db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
     if exists:
         return exists[0]
     return False

@@ -1,16 +1,12 @@
 from http import HTTPStatus
 
-from flask import (
-    Blueprint,
-    Response,
-    make_response,
-)
+from flask import Blueprint, Response, make_response
 
 from garlight.bulbs import BulbException, HomeBulb
 from garlight.db.database import db
-from garlight.routing.endpoints_definitions import create_definitions
-from garlight.logs import gunicorn_logger
 from garlight.db.models import BulbModel
+from garlight.logs import gunicorn_logger
+from garlight.routing.endpoints_definitions import create_definitions
 
 bulb = Blueprint("bulb", import_name=__name__)
 

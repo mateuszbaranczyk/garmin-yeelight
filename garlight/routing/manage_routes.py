@@ -1,16 +1,10 @@
 from http import HTTPStatus
 
-from flask import (
-    Blueprint,
-    redirect,
-    request,
-    url_for,
-)
+from flask import Blueprint, redirect, request, url_for
 
 from garlight.bulbs import discover_and_assign
 from garlight.db.database import db
 from garlight.db.models import BulbModel
-
 
 manage = Blueprint("manage", import_name=__name__)
 root = Blueprint("root", import_name=__name__)
