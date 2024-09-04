@@ -106,7 +106,7 @@ def change_request(bulb: HomeBulb) -> Response:
     try:
         msg = bulb.on_off()
         response = create_response(msg)
-        gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
+        # gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
     except BulbException:
         response = create_response("ERROR", HTTPStatus.INTERNAL_SERVER_ERROR)
     return response
