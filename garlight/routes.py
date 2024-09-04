@@ -1,13 +1,7 @@
 from http import HTTPStatus
 
-from flask import (
-    Blueprint,
-    Response,
-    make_response,
-    request,
-    url_for,
-    redirect,
-)
+from flask import (Blueprint, Response, make_response, redirect, request,
+                   url_for)
 
 from garlight.bulbs import BulbException, HomeBulb, discover_and_assign
 from garlight.database import db

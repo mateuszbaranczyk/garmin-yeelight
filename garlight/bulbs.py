@@ -1,5 +1,5 @@
 from sqlalchemy.sql.expression import literal
-from yeelight import Bulb, discover_bulbs, CronType, SceneClass
+from yeelight import Bulb, CronType, SceneClass, discover_bulbs
 
 from garlight.logs import gunicorn_logger
 from garlight.models import BulbModel, db
@@ -59,14 +59,10 @@ class HomeBulb:
             return f"Timer to {minutes} min."
         return "Failed"
 
-    def set_color(
-        self, red: int, green: int, blue: int, brightness: int
-    ) -> str:
+    def set_color(self, red: int, green: int, blue: int, brightness: int) -> str:
         """Colors in range 0-255, brightness 0-100"""
         self._validate_colors(red, green, blue, brightness)
-        status = self.bulb.set_scene(
-            SceneClass.COLOR, red, green, blue, brightness
-        )
+        status = self.bulb.set_scene(SceneClass.COLOR, red, green, blue, brightness)
         return self._status_return(status)
 
     def set_temperature(self, temperature: int, brightness: int) -> str:
@@ -81,22 +77,22 @@ class HomeBulb:
         return "Failed"
 
     def _validate_temperature(sefl, temperature: int, brightness: int) -> None:
-        if not temperature in range(1700, 6501):
+        if temperature not in range(1700, 6501):
             raise ValueError("Temperature out of range!")
 
-        if not brightness in range(0, 101):
+        if brightness not in range(0, 101):
             raise ValueError("Brightness out of range!")
 
     def _validate_colors(
         self, red: int, green: int, blue: int, brightness: int
     ) -> None:
-        if not red in range(0, 256):
+        if red not in range(0, 256):
             raise ValueError("Red out of range!")
-        if not green in range(0, 256):
+        if green not in range(0, 256):
             raise ValueError("Green out of range!")
-        if not blue in range(0, 256):
+        if blue not in range(0, 256):
             raise ValueError("Blue out of range!")
-        if not brightness in range(0, 101):
+        if brightness not in range(0, 101):
             raise ValueError("Brightness out of range!")
 
 
@@ -117,9 +113,7 @@ def discover_and_assign() -> None:
 
 
 def bulb_exists(bulb_id: str) -> bool:
-    exists = (
-        db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
-    )
+    exists = db.session.query(literal(True)).filter(BulbModel.id == bulb_id).first()
     if exists:
         return exists[0]
     return False
