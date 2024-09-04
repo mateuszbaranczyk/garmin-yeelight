@@ -15,11 +15,11 @@ class HomeBulb:
         self.bulb = Bulb(ip=self.model.ip)
 
     def __repr__(self) -> str:
-        return f"{self.model} - {self.check_state()}"
+        return f"{self.model.name} - {self.check_state()}"
 
     @property
     def state(self):
-        return f"{self.model} - {self.check_state()}"
+        return f"{self.model.name} - {self.check_state()}"
 
     def get_from_db(self, name: str) -> BulbModel:
         model = db.session.execute(
