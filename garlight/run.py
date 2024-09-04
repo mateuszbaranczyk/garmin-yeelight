@@ -1,7 +1,7 @@
 from flask import Flask
 
 from garlight.logs import gunicorn_logger
-from garlight.models import db
+from garlight.db.models import db
 
 
 def create_app():

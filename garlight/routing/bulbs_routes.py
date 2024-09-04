@@ -7,10 +7,10 @@ from flask import (
 )
 
 from garlight.bulbs import BulbException, HomeBulb
-from garlight.database import db
+from garlight.db.database import db
 from garlight.routing.endpoints_definitions import create_definitions
 from garlight.logs import gunicorn_logger
-from garlight.models import BulbModel
+from garlight.db.models import BulbModel
 
 bulb = Blueprint("bulb", import_name=__name__)
 

@@ -2,7 +2,7 @@ from sqlalchemy.sql.expression import literal
 from yeelight import Bulb, CronType, SceneClass, discover_bulbs
 
 from garlight.logs import gunicorn_logger
-from garlight.models import BulbModel, db
+from garlight.db.models import BulbModel, db
 
 
 class BulbException(Exception):

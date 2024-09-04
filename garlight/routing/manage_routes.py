@@ -8,8 +8,8 @@ from flask import (
 )
 
 from garlight.bulbs import discover_and_assign
-from garlight.database import db
-from garlight.models import BulbModel
+from garlight.db.database import db
+from garlight.db.models import BulbModel
 
 
 manage = Blueprint("manage", import_name=__name__)
