@@ -95,6 +95,13 @@ def set_name(id: str):
     return {"msg": "provide name"}, HTTPStatus.BAD_REQUEST
 
 
+@manage.route("/discover")
+def discover():
+    discover_and_assign()
+    url = url_for("manage.list_devices")
+    return redirect(url)
+
+
 def change_request(bulb: HomeBulb) -> Response:
     try:
         msg = bulb.on_off()
