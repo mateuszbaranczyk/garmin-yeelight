@@ -84,14 +84,14 @@ def list_devices():
     return result
 
 
-@manage.route("/set-name/<string:id>")
-def set_name(id: str):
-    name = request.args.get("name", None)
-    if name:
-        bulb = db.one_or_404(db.select(BulbModel).filter_by(id=id))
-        bulb.name = name
+@manage.route("/set-name/<string:name>", methods=["POST"])
+def set_name(name: str):
+    new_name = request.json.get("name", None)
+    if new_name:
+        bulb = db.one_or_404(db.select(BulbModel).filter_by(name=name))
+        bulb.name = new_name
         db.session.commit()
-        return bulb.as_dict()
+        return {"name": bulb.name}
     return {"msg": "provide name"}, HTTPStatus.BAD_REQUEST
 
 
@@ -106,7 +106,7 @@ def change_request(bulb: HomeBulb) -> Response:
     try:
         msg = bulb.on_off()
         response = create_response(msg)
-        # gunicorn_logger.info(f"{bulb.bulb_name} - {msg}")
+        gunicorn_logger.info(f"{bulb.model.name} - {msg}")
     except BulbException:
         response = create_response("ERROR", HTTPStatus.INTERNAL_SERVER_ERROR)
     return response
