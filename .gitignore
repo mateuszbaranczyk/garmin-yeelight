@@ -58,3 +58,4 @@ dist/**
 package.nls.*.json
 l10n/
 python-env-tools/**
+.vscode/settings.json
