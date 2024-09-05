@@ -22,3 +22,12 @@ def test_discover(discover_bulbs_mock, discover_result, client):
 
     assert response.status_code == 302
     assert len(result) == len(discover_result)
+def test_list_devices(app):
+    num_of_devices = 2
+    with app.app_context():
+        client = app.test_client()
+        create_bulbs(num_of_devices)
+        response = client.get("/list")
+
+    devices = response.json["devices"]
+    assert len(devices) == num_of_devices
