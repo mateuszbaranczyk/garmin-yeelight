@@ -22,6 +22,8 @@ def test_discover(discover_bulbs_mock, discover_result, client):
 
     assert response.status_code == 302
     assert len(result) == len(discover_result)
+
+
 def test_list_devices(app):
     num_of_devices = 2
     with app.app_context():
@@ -49,3 +51,16 @@ def test_set_name(app):
     assert response.json == expected
 
 
+def create_bulbs(num: int, name: str = "test") -> list[dict[str:str]]:
+    bulbs = []
+    for bulb in range(num):
+        bulb_data = {
+            "id": f"id_bulb{bulb}",
+            "ip": f"10.5.0.{bulb}",
+            "name": f"{name}_{bulb}",
+        }
+        db_bulb = BulbModel(**bulb_data)
+        bulbs.append(bulb_data)
+        db.session.add(db_bulb)
+        db.session.commit()
+    return bulbs
