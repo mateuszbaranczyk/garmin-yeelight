@@ -35,4 +35,10 @@ def client(app) -> FlaskClient:
     return app.test_client()
 
 
-
+@fixture()
+def bulb(app) -> BulbModel:
+    db_bulb = BulbModel(id="test_id", ip="10.5.0.1", name="test_name")
+    with app.app_context():
+        db.session.add(db_bulb)
+        db.session.commit()
+    return db_bulb
