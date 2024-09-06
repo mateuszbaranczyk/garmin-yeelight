@@ -18,7 +18,7 @@ def smoke():
 @manage.route("/list")
 def list_devices():
     devices = db.session.execute(db.select(BulbModel)).scalars().all()
-    result = {"devices": [device.name] for device in devices}
+    result = {"devices": [device.name for device in devices]}
     return result
 
 
