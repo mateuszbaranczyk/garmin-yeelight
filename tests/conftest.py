@@ -25,8 +25,9 @@ def app():
 
     yield app
 
-    db.session.remove()
-    db.drop_all
+    with app.app_context():
+        db.session.remove()
+        db.drop_all
 
 
 @fixture()
