@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "garmin-requests"
-version = ""
+version = "v2.0.1"
 description = ""
 authors = ["kundzior <grzybek2413@gmail.com>"]
 readme = "README.md"
