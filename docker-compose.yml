@@ -3,7 +3,10 @@ services:
     build: .
     container_name: "garlight"
     restart: always
-    environment:
-      - LIV_ID=$LIV_ID
-      - BED_ID=$BED_ID
     network_mode: "host"
+    volumes:
+      - db:/app/garlight/instance
+
+volumes:
+  db:
+    external: true
