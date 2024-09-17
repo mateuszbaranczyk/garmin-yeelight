@@ -38,7 +38,7 @@ def on_off(name: str):
 
 @bulb.route("/set-warm/<string:name>")
 def set_warm(name: str):
-    temperature = 6000
+    temperature = 2000
     brightness = 40
     bulb = HomeBulb(name)
     msg = bulb.set_temperature(temperature, brightness)
