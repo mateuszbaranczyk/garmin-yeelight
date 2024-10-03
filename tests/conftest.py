@@ -37,8 +37,8 @@ def client(app) -> FlaskClient:
 
 @fixture()
 def bulb(app) -> BulbModel:
-    db_bulb = BulbModel(id="test_id", ip="10.5.0.1", name="test_name")
     with app.app_context():
+        db_bulb = BulbModel(id="test_id", ip="10.5.0.1", name="test_name")
         db.session.add(db_bulb)
         db.session.commit()
     return db_bulb
