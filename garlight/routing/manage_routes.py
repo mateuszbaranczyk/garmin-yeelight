@@ -5,6 +5,7 @@ from flask import Blueprint, redirect, request, url_for
 from garlight.bulbs import discover_and_assign
 from garlight.db.database import db
 from garlight.db.models import BulbModel
+from sqlalchemy.exc import IntegrityError
 
 manage = Blueprint("manage", import_name=__name__)
 root = Blueprint("root", import_name=__name__)
@@ -28,8 +29,11 @@ def set_name(name: str):
     if new_name:
         bulb = db.one_or_404(db.select(BulbModel).filter_by(name=name))
         bulb.name = new_name
-        db.session.commit()
-        return {"name": bulb.name}
+        try:
+            db.session.commit()
+            return {"name": bulb.name}
+        except IntegrityError:
+            return {"msg": "set unique name"}, HTTPStatus.BAD_REQUEST
     return {"msg": "provide name"}, HTTPStatus.BAD_REQUEST
 
 
