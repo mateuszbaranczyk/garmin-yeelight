@@ -1,8 +1,10 @@
 from unittest.mock import patch
-from tests.example import bulbs_single_discover, bulbs_multi_discover
+
+import pytest
+
 from garlight.db.database import db
 from garlight.db.models import BulbModel
-import pytest
+from tests.example import bulbs_multi_discover, bulbs_single_discover
 
 
 def test_smoke(client):

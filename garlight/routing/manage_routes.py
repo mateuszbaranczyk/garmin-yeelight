@@ -1,11 +1,11 @@
 from http import HTTPStatus
 
 from flask import Blueprint, redirect, request, url_for
+from sqlalchemy.exc import IntegrityError
 
 from garlight.bulbs import discover_and_assign
 from garlight.db.database import db
 from garlight.db.models import BulbModel
-from sqlalchemy.exc import IntegrityError
 
 manage = Blueprint("manage", import_name=__name__)
 root = Blueprint("root", import_name=__name__)
