@@ -1,6 +1,9 @@
-from pytest import fixture
-from flask.testing import FlaskClient
+from dataclasses import asdict, dataclass
+
 from flask import Flask
+from flask.testing import FlaskClient
+from pytest import fixture
+
 from garlight.db.database import db
 from garlight.db.models import BulbModel
 
@@ -35,10 +38,23 @@ def client(app) -> FlaskClient:
     return app.test_client()
 
 
+@dataclass(frozen=True)
+class BulbData:
+    id: str
+    ip: str
+    name: str
+
+
 @fixture()
-def bulb(app) -> BulbModel:
+def bulb_data():
+    data = {"id": "test_id", "ip": "10.5.0.1", "name": "test_name"}
+    return BulbData(**data)
+
+
+@fixture()
+def bulb(app, bulb_data) -> BulbModel:
     with app.app_context():
-        db_bulb = BulbModel(id="test_id", ip="10.5.0.1", name="test_name")
+        db_bulb = BulbModel(**asdict(bulb_data))
         db.session.add(db_bulb)
         db.session.commit()
-    return db_bulb
+    return bulb_data
