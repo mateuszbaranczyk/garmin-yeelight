@@ -61,3 +61,4 @@ python-env-tools/**
 .vscode/settings.json
 .vscode/launch.json
 instance
+.coverage
