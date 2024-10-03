@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from flask import Blueprint, redirect, request, url_for
+from sqlalchemy.exc import IntegrityError
 
 from garlight.bulbs import discover_and_assign
 from garlight.db.database import db
@@ -18,7 +19,7 @@ def smoke():
 @manage.route("/list")
 def list_devices():
     devices = db.session.execute(db.select(BulbModel)).scalars().all()
-    result = {"devices": [device.name] for device in devices}
+    result = {"devices": [device.name for device in devices]}
     return result
 
 
@@ -28,8 +29,11 @@ def set_name(name: str):
     if new_name:
         bulb = db.one_or_404(db.select(BulbModel).filter_by(name=name))
         bulb.name = new_name
-        db.session.commit()
-        return {"name": bulb.name}
+        try:
+            db.session.commit()
+            return {"name": bulb.name}
+        except IntegrityError:
+            return {"msg": "set unique name"}, HTTPStatus.BAD_REQUEST
     return {"msg": "provide name"}, HTTPStatus.BAD_REQUEST
 
 
