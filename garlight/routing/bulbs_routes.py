@@ -38,18 +38,18 @@ def on_off(name: str):
 
 @bulb.route("/set-warm/<string:name>")
 def set_warm(name: str):
-    temperature = 6000
+    temperature = 2000
     brightness = 40
     bulb = HomeBulb(name)
     msg = bulb.set_temperature(temperature, brightness)
-    return msg
+    return create_response(msg, bulb)
 
 
 @bulb.route("/set-timer/<string:name>")
 def set_timer(name: str):
     bulb = HomeBulb(name)
     msg = bulb.set_timier()
-    return msg
+    return create_response(msg, bulb)
 
 
 @bulb.route("/set-color/<string:name>")
@@ -60,20 +60,20 @@ def set_color(name: str):
     brightness = 40
     bulb = HomeBulb(name)
     msg = bulb.set_color(red, green, blue, brightness)
-    return msg
+    return create_response(msg, bulb)
 
 
 def change_request(bulb: HomeBulb) -> Response:
     try:
         msg = bulb.on_off()
-        response = create_response(msg)
-        gunicorn_logger.info(f"{bulb.model.name} - {msg}")
+        response = create_response(msg, bulb)
     except BulbException:
-        response = create_response("ERROR", HTTPStatus.INTERNAL_SERVER_ERROR)
+        response = create_response("ERROR", bulb, HTTPStatus.INTERNAL_SERVER_ERROR)
     return response
 
 
-def create_response(msg: str, status: int = HTTPStatus.OK) -> Response:
+def create_response(msg: str, bulb: HomeBulb, status: int = HTTPStatus.OK) -> Response:
     response = make_response(msg, status)
     response.mimetype = "text/plain"
+    gunicorn_logger.info(f"{bulb.model.name} - {msg}")
     return response
